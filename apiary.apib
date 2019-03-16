@@ -1,0 +1,145 @@
+FORMAT: 1A
+HOST: http://localhost:8080/TempStatService
+
+# TempStatService
+
+The service for statistics temperature data. Allows this operations:
+- Getting all temperature values with their timestamps and unique ids.
+- Storing the temperature value in Celsius degree and with actual timestamp.
+- Updating of specific temperature record.
+- Deleting of specific temperature record.
+- Getting value of start and end date of the longest period when temperatures didn't fall below the value A and at the same time temperatures didn't rise above the value B.
+- Same as in the previous indent but with extra condition when time of measuring must be between the entered values X and Y hours for each day.
+
+## Temperatures collection [/temperatures]
+
+### List all Temperatures [GET]
+
+Getting all temperature values with their timestamps and unique ids.
+
++ Response 200 (application/json)
+
+        [
+            {
+                "id": 1,
+                "dateAndTime": "2019-20-06 17:20:15",
+                "temperature": 26
+            },
+            {
+                "id": 2,
+                "dateAndTime": "2019-20-06 18:20:15",
+                "temperature": 23
+            }
+        ]
+
+### Add Temperature record [POST] 
+
+Storing the temperature value in Celsius degree and with actual timestamp.
+
++ Request (application/json)
+
+        {
+            "dateAndTime": "2019-20-06 18:40:00",
+            "temperature": 22
+        }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /temperatures/3
+
+    + Body
+
+            {
+                "id": 3,
+                "dateAndTime": "2019-20-06 18:40:00",
+                "temperature": 22
+            }
+            
+## Temperature [/temperatures/{id}]
+
++ Parameters
+    + id (required, number, `3`) ... Numeric `id` of the temperature. 
+
+### Get an Existing Temperature Record [GET] 
+
+Getting of specific temperature record.
+
++ Response 200 (application/json)
+
+    + Headers
+
+            Location: /temperatures/3
+
+    + Body
+
+            {
+                "id": 3,
+                "dateAndTime": "2019-20-06 18:40:00",
+                "temperature": 22
+            }
+                
+### Update existing Temperature record [POST] 
+
+Updating of specific temperature record.
+
++ Request (application/json)
+
+        {
+            "temperature": 21
+        }
+
++ Response 200 (application/json)
+
+    + Headers
+
+            Location: /temperatures/3
+
+    + Body
+
+            {
+                "id": 3,
+                "dateAndTime": "2019-20-06 18:40:00",
+                "temperature": 21
+            }
+            
+### Delete existing Temperature record [DELETE] 
+
++ Response 200 (application/json)
+
+## Temperatures statistics collection [/temperatures/statistics{?lowTemp,highTemp}]
+
++ Parameters
+    + lowTemp (required, number, `22`) ... Low value `lowTemp` of the temperature. 
+    + highTemp (required, number, `24`) ... Low value `highTemp` of the temperature. 
+
+### Get longest period by low and high temperature [GET]
+
+Getting value of start and end date of the longest period when temperatures didn't fall below the value lowTemp and at the same time temperatures didn't rise above the value highTemp.
+
++ Response 200 (application/json)
+
+        {
+            "dateAndTimeFrom": "2019-20-06 17:35:05",
+            "dateAndTimeTo": "2019-20-06 17:58:45"
+        }
+        
+## Temperatures statistics collection [/temperatures/statistics{?lowTemp,highTemp,hourFrom,hourTo}]
+
++ Parameters
+    + lowTemp (required, number, `22`) ... Low value `lowTemp` of the temperature. 
+    + highTemp (required, number, `24`) ... Low value `highTemp` of the temperature. 
+    + hourFrom (required, number, `17`) ... Low value `hourFrom` of the temperature. 
+    + hourTo (required, number, `18`) ... Low value `hourTo` of the temperature.
+
+### Get longest period by low and high temperature between hours of day [GET]
+
+Getting value of start and end date of the longest period when temperatures didn't fall below the value lowTemp and at the same time temperatures didn't rise above the value highTemp. But with extra condition when hours of measuring must be between the entered values hourFrom and hourTo for each day.
+
++ Response 200 (application/json)
+
+        {
+            "dateAndTimeFrom": "2019-20-06 17:35:05",
+            "dateAndTimeTo": "2019-20-06 17:58:45"
+        }
