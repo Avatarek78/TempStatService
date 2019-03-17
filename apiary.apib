@@ -3,13 +3,9 @@ HOST: http://localhost:8080/TempStatService
 
 # TempStatService
 
-The service for statistics temperature data. Allows this operations:
-- Getting all temperature values with their timestamps and unique ids.
-- Storing the temperature value in Celsius degree and with actual timestamp.
-- Updating of specific temperature record.
-- Deleting of specific temperature record.
-- Getting value of start and end date of the longest period when temperatures didn't fall below the value A and at the same time temperatures didn't rise above the value B.
-- Same as in the previous indent but with extra condition when time of measuring must be between the entered values X and Y hours for each day.
+The service for statistics temperature data. Service offers API functions described below:
+
+# Group Temperatures
 
 ## Temperatures collection [/temperatures]
 
