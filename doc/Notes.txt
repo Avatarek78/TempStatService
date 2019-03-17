@@ -1,0 +1,58 @@
+Projekt na APIARY: 
+https://app.apiary.io/tempstatservice/editor 
+
+Obsah: Apiary.txt 
+
+Git: https://github.com/Avatarek78/TempStatService#tempstatservice  propojeno s projektem v Apiary. 
+
+
+JpaRepository rozšiřuje PagingAndSortingRepository , který zase rozšiřuje CrudRepository .
+
+Jejich hlavní funkce jsou:
+
+CrudRepository hlavně poskytuje funkce CRUD.
+PagingAndSortingRepository poskytuje způsoby, jak provádět stránkování a třídění záznamů.
+JpaRepository poskytuje některé metody související s JPA, jako je vyprázdnění kontextu vytrvalosti a odstranění záznamů v 
+
+Složitější vlastní query v CrudRepository by měli jít dělat asi nějak takto: 
+@Query("from Auction a join a.category c where c.name=:categoryName")
+public Iterable<Auction> findByCategory(@Param("categoryName") String categoryName);
+
+https://www.petrikainulainen.net/programming/spring-framework/spring-data-jpa-tutorial-three-custom-queries-with-query-methods/
+
+
+Pridal jsem si do application.properties H2 DB a asi bych ji potom pouzil i pro testy.
+
+# H2
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2
+# Datasource
+spring.datasource.url=jdbc:h2:file:~/test
+spring.datasource.username=sa
+spring.datasource.password=
+spring.datasource.driver-class-name=org.h2.Driver
+
+Je tam hned vytvorena DB test a v ni se hned vytvori tabulka Temperature jen co se spusti appka.
+
+Ted bych jeste tedy potreboval aby se pro JUnit testy natahl konfigurak napr. application.test.properties kde bych mel nakonfigurovanu tuto H2 DB a pro "Produkci" bych mel v 
+application.properties nakonfigurovanu MySQL DB. 
+
+V Postmanu to jde v pohodě
+http://localhost:8080/TempStatService/temperatures 
+Ale v Apiary mám problém, že i když mám nastaveno: 
+HOST: http://localhost:8080/TempStatService
+tak to používá pro production "https" a to samozřejmě nefunguje, takže možná přepnout tu svoji aplikaci na https?: 
+po refreshi stránky s Apiary se to změnilo na http, takže OK.
+
+2019-03-16 21:57:22.684 ERROR 10504 --- [  restartedMain] org.apache.catalina.util.LifecycleBase   : Failed to start component [Connector[HTTP/1.1-8443]]
+org.apache.catalina.LifecycleException: Protocol handler start failed
+	at org.apache.catalina.connector.Connector.startInternal(Connector.java:1008) ~[tomcat-embed-core-9.0.16.jar:9.0.16]
+
+Takto na přímo "localhost" to přes Apiary nepůjde, musí se tam udělat tunel např. takto: 
+Použití ngrok: 
+Stažení a instalace odsud: https://ngrok.com/download 
+Spuštění tunelu: ngrok http 8080 
+Bez registrace na stránkách funguje jen 8 hodin, ale to neva to mě na testování zatím stačí. 
+A teď se konečně přes tento tunel dostanu na tu svoji appku. 
+http://4e239c42.ngrok.io/TempStatService/temperatures 
+webová konzole kde jsou nádherně také vidět všechny požadavky: http://127.0.0.1:4040/inspect/http

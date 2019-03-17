@@ -1,0 +1,174 @@
+{
+	"info": {
+		"_postman_id": "d36ca8a9-907d-4b10-9ceb-cceb15ecf4e8",
+		"name": "TempStatService",
+		"description": "The service for statistics temperature data. Service offers API functions described below:",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "List all temperatures",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/TempStatService/temperatures",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"TempStatService",
+						"temperatures"
+					]
+				},
+				"description": "Getting all temperature values with their timestamps and unique ids."
+			},
+			"response": [
+				{
+					"name": "List all temperatures",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8080/TempStatService/temperatures",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"TempStatService",
+								"temperatures"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=UTF-8"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 17 Mar 2019 07:58:55 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": 1,\n        \"dateAndTime\": \"2019-20-06 17:20:15\",\n        \"temperature\": 26\n    },\n    {\n        \"id\": 2,\n        \"dateAndTime\": \"2019-20-06 18:20:15\",\n        \"temperature\": 23\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "Add Temperature record",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/TempStatService",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"TempStatService"
+					]
+				},
+				"description": "Storing the temperature value in Celsius degree and with actual timestamp."
+			},
+			"response": [
+				{
+					"name": "Add Temperature record",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"dateAndTime\": \"2019-20-06 18:40:00\",\n    \"temperature\": 22\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/TempStatService",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"TempStatService"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=UTF-8"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 17 Mar 2019 08:02:06 GMT"
+						},
+						{
+							"key": "Location",
+							"value": "/temperatures/3",
+							"description": "",
+							"type": "text"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 3,\n    \"dateAndTime\": \"2019-20-06 18:40:00\",\n    \"temperature\": 22\n}"
+				}
+			]
+		}
+	]
+}
