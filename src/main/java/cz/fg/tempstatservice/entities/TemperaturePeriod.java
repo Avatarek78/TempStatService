@@ -1,0 +1,48 @@
+package cz.fg.tempstatservice.entities;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import cz.fg.tempstatservice.utils.TimeUtils;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
+
+import java.math.BigInteger;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Class with time period data. Contains start and end date, min and max temperature values and the number of measurements of this period.
+ */
+@Getter
+@AllArgsConstructor
+@ToString
+public class TemperaturePeriod implements Comparable<TemperaturePeriod> {
+
+    @JsonFormat(pattern = TimeUtils.DATE_FORMAT)
+    private Date startOfPeriod;
+
+    @JsonFormat(pattern = TimeUtils.DATE_FORMAT)
+    private Date endOfPeriod;
+
+    private Float minTemp;
+    private Float maxTemp;
+    private BigInteger countOfMeasurements;
+
+    @Override
+    public int compareTo(TemperaturePeriod o) {
+        Long thisTimeDiff = TimeUtils.getDateDiff(startOfPeriod, endOfPeriod, TimeUnit.MILLISECONDS);
+        Long otherTimeDiff = TimeUtils.getDateDiff(o.startOfPeriod, o.endOfPeriod, TimeUnit.MILLISECONDS);
+        int result = thisTimeDiff.compareTo(otherTimeDiff);
+        // If periods are same by time difference then compare them by countOfMeasurements
+        if (result == 0) {
+            result = countOfMeasurements.compareTo(o.countOfMeasurements);
+        }
+        // If still no difference then compare them by temperature range. Biggest range is winner.
+        if (result == 0) {
+            Float thisTempDiff = maxTemp - minTemp;
+            Float otherTempDiff = o.maxTemp - o.minTemp;
+            result = thisTempDiff.compareTo(otherTempDiff);
+        }
+        return result;
+    }
+}

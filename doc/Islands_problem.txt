@@ -1,0 +1,284 @@
+I want to get the ranges of numbers for a specific customer. so, if the table data is:
+
+======================
+|id|customer_id|value|
+======================
+| 1|         21|    1|
+----------------------
+| 2|         21|    2|
+----------------------
+| 3|         21|    3|
+----------------------
+| 4|         21|   20|
+----------------------
+| 5|         21|   21|
+----------------------
+| 6|         21|   22|
+----------------------
+| 7|         22|    5|
+----------------------
+i'll get a result that is something like this, for customer_id=21:
+
+==========
+start |end
+==========
+|    1| 3|
+----------
+|   20|22|
+----------
+and something like this for customer_id=22:
+
+==========
+start |end
+==========
+|    5| 5|
+----------
+
+CREATE TABLE my_table
+    (id SERIAL PRIMARY KEY
+    ,customer_id int NOT NULL
+    ,value int NOT NULL
+    );
+
+    INSERT INTO my_table VALUES
+    (1,         21,    1),
+    (2,         21,    2),
+    (3,         21,    3),
+    (4,         21,   20),
+    (5,         21,   21),
+    (6,         21,   22),
+    (7,         22,    5);
+
+    SELECT customer_id
+         , MIN(value) start
+         , MAX(value) end 
+      FROM 
+         ( SELECT *
+                , CASE WHEN value = @prev+1 THEN @i:=@i ELSE @i:=@i+1 END grp
+                , @prev:=value prev
+             FROM my_table
+                , (SELECT @prev:= null,@i:=0) vars 
+            ORDER 
+               BY customer_id
+                , id
+         ) x 
+     GROUP 
+        BY customer_id,grp;
+    +-------------+-------+------+
+    | customer_id | start | end  |
+    +-------------+-------+------+
+    |          21 |     1 |    3 |
+    |          21 |    20 |   22 |
+    |          22 |     5 |    5 |
+    +-------------+-------+------+
+	
+Super toto funguje v H2 i MySQL databázi!!! 
+	
+S JPA @Query tedy nejspíš půjde udělat jakýkoliv select, takže by to mohlo být řešení, aniž bych musel rozhraní TemperatureRepository implementovat a snažit se to napsat do nějakého CriteriaApi. 
+public static final String FIND_PROJECTS = "SELECT projectId, projectName FROM projects";
+
+@Query(value = FIND_PROJECTS, nativeQuery = true)
+public List<Object[]> findProjects(); 
+
+Aplikace na můj případ: 
+SELECT MIN(DATE_AND_TIME) start
+             , MAX(DATE_AND_TIME) end
+             ,grp           
+      FROM 
+         ( SELECT *
+                , CASE WHEN temp_value BETWEEN 22 AND 24 THEN @range:=@range ELSE @range:=@range+1 END grp                
+            FROM temperature
+            ORDER 
+               BY DATE_AND_TIME
+         ) x 
+     GROUP 
+        BY grp;
+		
+Vnitrni cast, která zdá se funguje: 
+SELECT 
+    *,
+    CASE
+        WHEN temp_value BETWEEN 22 AND 24 
+        THEN @range:=@range
+        ELSE @range:=@range+1
+    END grp
+FROM
+    temperature
+ORDER BY DATE_AND_TIME
+		
+		
+SELECT *
+		, CASE WHEN value = @prev+1 THEN @i:=@i ELSE @i:=@i+1 END grp
+		, @prev:=value prev
+	 FROM my_table                
+	ORDER 
+	   BY customer_id
+		, id
+
+
+ID  	CUSTOMER_ID  	VALUE  	GRP  	PREV  
+1		21				1		2		1
+2		21				2		2		2
+3		21				3		2		3
+4		21				20		3		20
+5		21				21		3		21
+6		21				22		3		22
+7		22				5		4		5
+
+Vylepsena aplikace pro muj pripad: 
+
+SELECT MIN(DATE_AND_TIME) start
+       , MAX(DATE_AND_TIME) end
+       , MIN(temp_value) minTemp
+       , MAX(temp_value) maxTemp
+       , COUNT(id) tempCount
+       ,grp           
+      FROM 
+         ( SELECT *
+                , CASE WHEN temp_value BETWEEN 20 AND 25 THEN @range:=@range ELSE @range:=@range+1 END grp                
+            FROM temperature
+            ORDER 
+               BY DATE_AND_TIME
+         ) x 
+	 WHERE temp_value >= 20 AND temp_value <= 25
+     GROUP 
+        BY grp;
+		
+		
+Dalsi verze: 
+SELECT MIN(date_and_time) start
+       , MAX(date_and_time) end
+       , MIN(temp_value) minTemp
+       , MAX(temp_value) maxTemp
+       , COUNT(id) tempCount
+       ,grp           
+      FROM 
+         ( SELECT *
+			, CASE WHEN @prev_temp_val >= 17 AND @prev_temp_val <= 18 THEN @range:=@range ELSE @range:=@range+1 END grp 
+			, @prev_temp_val:=temp_value prev_temp_val
+			FROM temperature
+			ORDER BY date_and_time
+         ) all_ranges 
+	 WHERE temp_value >= 17 AND temp_value <= 18
+     GROUP BY grp HAVING COUNT(id) > 1
+     ORDER BY date_and_time DESC;
+
+Konecne funkcni tak jak bych si predstavoval! 
+start				end					minTemp	maxTemp	tempCount	grp
+------------------------------------------------------------------------
+2019-03-21 16:46:10	2019-03-21 16:46:30	17.3447	17.7572	3			21307
+2019-03-21 16:26:10	2019-03-21 16:26:20	17.2744	17.3147	2			21207
+2019-03-21 16:17:40	2019-03-21 16:17:50	17.4339	17.7978	2			21167
+2019-03-21 16:11:00	2019-03-21 16:11:10	17.8293	17.8534	2			21134
+2019-03-21 16:05:20	2019-03-21 16:05:30	17.7605	17.9026	2			21108
+2019-03-21 16:00:50	2019-03-21 16:01:00	17.6357	17.6999	2			21085
+2019-03-21 15:58:30	2019-03-21 15:58:40	17.1538	17.582	2			21074
+... 
+
+Skutecne funkcni verze je ale tato!!!:
+SELECT MIN(date_and_time) start
+       , MAX(date_and_time) end
+       , MIN(temp_value) minTemp
+       , MAX(temp_value) maxTemp
+       , COUNT(id) tempCount
+       ,grp           
+      FROM 
+         ( SELECT *
+			, CASE WHEN @prev_temp_val BETWEEN 17 AND 18 THEN @range:=@range ELSE @range:=@range+1 END grp 
+			, @prev_temp_val:=temp_value prev_temp_val
+			FROM temperature
+            , (SELECT @prev_temp_val:= null,@range:=0) vars 
+			ORDER BY date_and_time
+         ) all_ranges 
+	 WHERE temp_value >= 17 AND temp_value <= 18
+     GROUP BY grp HAVING COUNT(id) > 1
+     ORDER BY date_and_time DESC;
+Vcera to fungovalo i bez toho, protoze jsem tam mel tu cast, ktera iniciovala tu promennou v DB z null na 0 a proto to fungovalo!!! 
+Pak jsem si ji smazal, ale tim, ze uz tam jednou byla tak to fungovalo jenze potom jsem restartoval pocitac a tim i databazi a tim se to pos... no me klepne.
+Klicova proto byla tato inicializace, ktera me tam vypadla!: (SELECT @prev_temp_val:= null,@range:=0) vars 
+
+Verze s podmínkou na hodiny od do:
+Stejně jako v předchozím případě jen v podmínkce budou ty hodiny: 
+WHERE temp_value >= 17 AND temp_value <= 18 AND HOUR(date_and_time) >= 14 AND HOUR(date_and_time) < 15 
+
+
+/* dynamic native SQL query */ SELECT
+        MIN(date_and_time) start ,
+        MAX(date_and_time) 
+    end ,
+    MIN(temp_value) minTemp ,
+    MAX(temp_value) maxTemp ,
+    COUNT(id) countOfMeasurements 
+FROM
+    ( SELECT
+        *      ,
+        CASE 
+            WHEN @prev_temp_val >= ? 
+            AND @prev_temp_val <= ? THEN @range:=@range 
+            ELSE @range:=@range+1 
+        END grp      ,
+        @prev_temp_val:=temp_value prev_temp_val      
+    FROM
+        temperature      ,
+        (SELECT
+            @prev_temp_val:=null,
+            @range:=0) vars      
+    ORDER BY
+        date_and_time   ) all_ranges 
+    WHERE
+        temp_value >= ? 
+        AND temp_value <= ? 
+    GROUP BY
+        grp 
+    HAVING
+        COUNT(id) > 1 
+    ORDER BY
+        date_and_time DESC;
+2019-03-24 19:37:19.783 TRACE 684 --- [  restartedMain] o.h.type.descriptor.sql.BasicBinder      : binding parameter [1] as [FLOAT] - [17.0]
+2019-03-24 19:37:19.783 TRACE 684 --- [  restartedMain] o.h.type.descriptor.sql.BasicBinder      : binding parameter [2] as [FLOAT] - [18.0]
+2019-03-24 19:37:19.783 TRACE 684 --- [  restartedMain] o.h.type.descriptor.sql.BasicBinder      : binding parameter [3] as [FLOAT] - [17.0]
+2019-03-24 19:37:19.783 TRACE 684 --- [  restartedMain] o.h.type.descriptor.sql.BasicBinder      : binding parameter [4] as [FLOAT] - [18.0]
+2019-03-24 19:37:19.830  INFO 684 --- [  restartedMain] c.f.t.TempStatServiceApplication         : longest period by temp range 17-18: 
+TemperaturePeriod(startOfPeriod=2019-03-21 15:33:20.0, endOfPeriod=2019-03-21 15:33:50.0, minTemp=17.0245, maxTemp=17.983, countOfMeasurements=4)
+
+/* dynamic native SQL query */ SELECT
+        MIN(date_and_time) start ,
+        MAX(date_and_time) end ,
+    MIN(temp_value) minTemp ,
+    MAX(temp_value) maxTemp ,
+    COUNT(id) countOfMeasurements 
+FROM
+    ( SELECT
+        *      ,
+        CASE 
+            WHEN @prev_temp_val >= ? 
+            AND @prev_temp_val <= ? THEN @range:=@range 
+            ELSE @range:=@range+1 
+        END grp      ,
+        @prev_temp_val:=temp_value prev_temp_val      
+    FROM
+        temperature      ,
+        (SELECT
+            @prev_temp_val:=null,
+            @range:=0) vars      
+    ORDER BY
+        date_and_time   ) all_ranges 
+    WHERE
+        temp_value >= ? 
+        AND temp_value <= ? 
+        AND HOUR(date_and_time) >= ? 
+        AND HOUR(date_and_time) < ? 
+    GROUP BY
+        grp 
+    HAVING
+        COUNT(id) > 1 
+    ORDER BY
+        date_and_time DESC;
+2019-03-24 19:46:04.408 TRACE 3352 --- [  restartedMain] o.h.type.descriptor.sql.BasicBinder      : binding parameter [1] as [FLOAT] - [17.0]
+2019-03-24 19:46:04.408 TRACE 3352 --- [  restartedMain] o.h.type.descriptor.sql.BasicBinder      : binding parameter [2] as [FLOAT] - [18.0]
+2019-03-24 19:46:04.408 TRACE 3352 --- [  restartedMain] o.h.type.descriptor.sql.BasicBinder      : binding parameter [3] as [FLOAT] - [17.0]
+2019-03-24 19:46:04.408 TRACE 3352 --- [  restartedMain] o.h.type.descriptor.sql.BasicBinder      : binding parameter [4] as [FLOAT] - [18.0]
+2019-03-24 19:46:04.408 TRACE 3352 --- [  restartedMain] o.h.type.descriptor.sql.BasicBinder      : binding parameter [5] as [INTEGER] - [16]
+2019-03-24 19:46:04.408 TRACE 3352 --- [  restartedMain] o.h.type.descriptor.sql.BasicBinder      : binding parameter [6] as [INTEGER] - [17]
+2019-03-24 19:46:14.083  INFO 3352 --- [  restartedMain] c.f.t.TempStatServiceApplication         : longest period by temp range 17-18 and hour range 14-15: 
+TemperaturePeriod(startOfPeriod=2019-03-21 17:46:10.0, endOfPeriod=2019-03-21 17:46:30.0, minTemp=17.3447, maxTemp=17.7572, countOfMeasurements=3)

@@ -55,4 +55,178 @@ Spuštění tunelu: ngrok http 8080
 Bez registrace na stránkách funguje jen 8 hodin, ale to neva to mě na testování zatím stačí. 
 A teď se konečně přes tento tunel dostanu na tu svoji appku. 
 http://4e239c42.ngrok.io/TempStatService/temperatures 
-webová konzole kde jsou nádherně také vidět všechny požadavky: http://127.0.0.1:4040/inspect/http
+webová konzole kde jsou nádherně také vidět všechny požadavky: http://127.0.0.1:4040/inspect/http 
+
+http://localhost:8080/TempStatService/temperatures/statistics?lowTemp=22.55&highTemp=24.89
+@GetMapping(path = "/statistics", params = {"lowTemp","highTemp"})
+    public ResponseEntity<?> getLongestPeriodByMinAndMaxTemperature(@RequestParam Float lowTemp, @RequestParam Float highTemp) {
+        ...
+        return null;
+    }
+
+http://localhost:8080/TempStatService/temperatures/statistics?lowTemp=22.55&highTemp=24.89&hourFrom=13&hourTo=17
+    @GetMapping(path = "/statistics", params = {"lowTemp","highTemp","hourFrom","hourTo"})
+    public ResponseEntity<?> getLongestPeriodByMinMaxTemperatureAndDayPeriod(@RequestParam Float lowTemp,
+                                                                             @RequestParam Float highTemp,
+                                                                             @RequestParam Integer hourFrom,
+                                                                             @RequestParam Integer hourTo) {
+        ...
+        return null;
+    }
+	
+	
+Co tahle na ten den použít toto? 
+Extracting Date Parts
+JPA doesn't define standard methods for extracting date and time parts but some JPA implementations, as well as ObjectDB, support such functions as an extension. ObjectDB supports 6 functions for extracting the YEAR, MONTH, DAY, HOUR, MINUTE and SECOND.
+
+For example:
+
+YEAR({d '2011-12-31'}) is evaluated to 2011.
+MONTH({d '2011-12-31'}) is evaluated to 12.
+DAY({d '2011-12-31'}) is evaluated to 31.
+HOUR({t '23:59:00'}) is evaluated to 23.
+MINUTE({t '23:59:00'}) is evaluated to 59.
+SECOND({t '23:59:00'}) is evaluated to 0.
+
+Toto funguje i na H2 DB, takže to bude asi nejlepší řešení: 
+SELECT HOUR(DATE_AND_TIME) FROM TEMPERATURE 
+Funguje to i na MySQL: 
+SELECT HOUR(set_time) FROM sys.sys_config; 
+SELECT HOUR(set_time) FROM sys.sys_config where HOUR(set_time) = 22;  
+
+@Query("from Temperature t where t.temperature >= :lowTemp and t.temperature <= :highTemp")
+    Iterable<Temperature> findByTempRange(@Param("lowTemp") Float lowTemp, @Param("highTemp") Float highTemp);
+
+insert into Temperature (id,dateAndTime,temperature) values (1,"2019-03-20 17:40:10",20); 
+
+************************************************************************************************************************************************************************
+Místo základního CrudRepository bych použil PagingAndSortingRepository abych mohl stránkovat záznamy. Tím bych mohl prostou metodu getAllTemperatures vylepšit na metodu s podporou stránkování, protože samozřejmě 
+pokud by bylo v DB několik milionů záznamů tak není vhodné aby se vybírali a vraceli všechny najednou. 
+Pageable pageable = PageRequest.of(0, 3, Sort.by("dateAndTime").descending());
+while(true){
+          Page<Temperature> page = repo.findAll(pageable);
+          System.out.println("Page no: "+page.getNumber());
+          page.getContent().forEach(System.out::println);
+          if(!page.hasNext()){
+              break;
+          }
+          pageable = page.nextPageable();
+      }
+************************************************************************************************************************************************************************ 
+
+Toto by se mohlo hodit na testovaci konfiguraci v JUnit testech: 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("/testconfig.xml") 
+
+@Configuration() pro testy musí také mít anotaci @Profile("test") 
+a testy potom @ActiveProfiles("test")
+
+Musím nastavit nejdřív testovací a potom i produkční DB tak aby se schéma vytvořilo samo. 
+spring.jpa.generate-ddl=true
+spring.jpa.hibernate.ddl-auto=create
+
+Produkcni MySQL DB kterou to bude používat:
+spring.jpa.database-platform=org.hibernate.dialect.MySQL5InnoDBDialect
+spring.jpa.hibernate.ddl-auto=update
+spring.datasource.driverClassName=com.mysql.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost:3306/test
+spring.datasource.username=test
+spring.datasource.password=
+
+
+Aktualni obsah: application-test.properties
+# H2 Database
+hibernate.dialect=org.hibernate.dialect.H2Dialect
+hibernate.hbm2ddl.auto=create
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2
+
+
+# H2 DataSource
+spring.datasource.url=jdbc:h2:file:~/temp-stat-service-test
+spring.datasource.username=sa
+spring.datasource.password=
+spring.datasource.driver-class-name=org.h2.Driver
+
+# Logging
+logging.level.root=INFO
+
+Takto je to funkcni vcetne vytvoreni databaze s nazvem "temp-stat-service-test": 
+# H2 Database
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.jpa.generate-ddl=true
+hibernate.hbm2ddl.auto=create
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2
+
+# H2 DataSource
+spring.datasource.url=jdbc:h2:file:~/temp-stat-service-test
+spring.datasource.username=sa
+spring.datasource.password=
+spring.datasource.driver-class-name=org.h2.Driver 
+
+Produkcni: 
+# MySQL DataSource
+spring.datasource.url=jdbc:mysql://localhost:3306/tempstatservice?createDatabaseIfNotExist=true&serverTimezone=UTC
+spring.datasource.username=root
+spring.datasource.password=root
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.generate-ddl=true
+spring.jpa.database-platform=org.hibernate.dialect.MySQL5InnoDBDialect
+
+# Logging
+logging.level.root=INFO
+
+Použití docker kontejneru s MySQL databází místo H2-ky, která se nemusí chovat stejně! 
+https://phauer.com/2017/dont-use-in-memory-databases-tests-h2/ 
+
+Možné řešení "ostrovních" problémů při hledání té nejdelší periody teplot: Islands_problem.txt 
+
+Pro případný vylepšený výpis dat pomocí stránkování: 
+Pageable pageable = PageRequest.of(0, 1000, Sort.by("dateAndTime").ascending());
+Page<Temperature> page = temperatureRepository.findAll(pageable);
+Ještě bych také přidal metody na hledání dle data a času a dle hodnot teploty. 
+
+0 = {Timestamp@9758} "2019-03-21 17:46:10.0"
+1 = {Timestamp@9759} "2019-03-21 17:46:30.0"
+2 = {Float@9760} 17.3447
+3 = {Float@9761} 17.7572
+4 = {BigInteger@9762} "3"
+5 = "787"
+
+Podrobne logovani SQL: 
+spring.jpa.properties.hibernate.show_sql=true
+spring.jpa.properties.hibernate.use_sql_comments=true
+spring.jpa.properties.hibernate.format_sql=true
+
+# Logging
+logging.level.root=INFO
+logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE 
+
+S testováním s H2 databází je problém, že se chová jinak než MySQL DB a to ohledně GROUP BY kdy v MySQL stačí seskupovat jen dle té mojí "grp" , ale H2 vyžaduje seskupování i dle date_and_time a to přes to, 
+že tam je to tam použito jen v agregačních fcích. 
+
+Group by by správně nemělo fungovat pokud v SELECT části dám * nebo sloupečky, které potom nejsou v GROUP BY části, ale agregační fce by tam měli být povoleny! 
+Dle tohoto https://stackoverflow.com/questions/31596497/h2-db-column-must-be-in-group-by-list 
+MySQL umožňuje i SELECT * FROM ... GROUP BY id např. což je prý chyba. Já ale v SELECT nemám žádné konkrétní sloupce, ale hodnoty z agregačních fcí: 
+SELECT 	MIN(date_and_time) start
+		MAX(date_and_time) end
+		MIN(temp_value) minTemp
+		MAX(temp_value) maxTemp
+		COUNT(id) countOfMeasurements
+tak proč to ta H2 nebere?
+
+Odstranil jsem ORDER BY date_and_time DESC; a zdá se, že to bere.
+Zase jiný problém H2 vrací ty hodnoty teplot jako Double a ne Float takže to vypadne tady:
+TemperatureService.lambda$convertRawDataToTempPeriods$0(TemperatureService.java:125) na:
+java.lang.ClassCastException: java.lang.Double cannot be cast to java.lang.Float
+
+H2 vrací ty hodnoty teplot jako Double
+0 = {Timestamp@6604} "2019-03-22 15:00:00.0"
+1 = {Timestamp@6603} "2019-03-22 18:10:00.0"
+2 = {Double@6602} 17.112754821777344
+3 = {Double@6601} 17.927024841308594
+4 = {BigInteger@6597} "20" 
+
+Upravil jsem metodu aby brala obojí. 

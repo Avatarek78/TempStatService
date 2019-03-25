@@ -16,6 +16,8 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<mysql.test.port>3306</mysql.test.port>
+		<mysql.test.pw>root</mysql.test.pw>
 	</properties>
 
 	<dependencies>
@@ -53,8 +55,18 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
-
+		<!-- junit test with easymock -->
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<version>LATEST</version>
+		</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>5.1.5.RELEASE</version>
+        </dependency>
+    </dependencies>
 	<build>
 		<plugins>
 			<plugin>

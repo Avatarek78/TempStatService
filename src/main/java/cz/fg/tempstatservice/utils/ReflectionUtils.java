@@ -2,6 +2,9 @@ package cz.fg.tempstatservice.utils;
 
 import java.lang.reflect.Field;
 
+/**
+ * Helper utilities for reflection.
+ */
 public final class ReflectionUtils {
 
     /**
