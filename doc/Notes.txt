@@ -230,3 +230,60 @@ H2 vrací ty hodnoty teplot jako Double
 4 = {BigInteger@6597} "20" 
 
 Upravil jsem metodu aby brala obojí. 
+
+Vyhodil jsem si inicializaci z TempStatServiceApplication
+
+@Autowired
+private TemperatureRepository temperatureRepository;
+
+@Autowired
+private TemperatureService temperatureService;
+
+private Date firstDate;
+private Date middleDate;
+private Date lastDate;
+private Date nextDate;
+
+@EventListener(ApplicationReadyEvent.class)
+public void afterStartup() {
+	logger.info("TempStatServiceApplication started...");
+	createDbTestData();
+	Iterable<Object[]> period = temperatureRepository.findLongestPeriodByTempRange(17F, 18F);
+	period.forEach(obj -> logger.info(Arrays.stream(obj)
+			.filter(Objects::nonNull)
+			.map(o -> o.toString())
+			.collect(Collectors.joining(","))));
+
+	TemperaturePeriod period = temperatureService.findLongestPeriodByTempRange(17F, 18F);
+	logger.info("longest period by temp range 17-18: " + period.toString());
+	period = temperatureService.findLongestPeriodByTempRangeAndDayPeriod(17F, 18F, 16, 17);
+	logger.info("longest period by temp range 17-18 and hour range 14-15: " + period.toString());
+}
+	
+private void createDbTestData() {
+	initPeriods();
+	LinkedList<Temperature> temperatures = TestUtils.createTestTemperatureCollection(
+			firstDate, 1, 1000, 10, TimeUnit.SECONDS, 15F, 20F);
+
+	temperatureRepository.deleteAll();
+	temperatureRepository.saveAll(temperatures);
+	logger.info("count=" + temperatureRepository.count());
+	Iterable<Temperature> byTempRange = temperatureRepository.findByTempRange(22F, 24F);
+	logger.info("byTempRange=" + byTempRange.spliterator().estimateSize());
+}
+
+private void initPeriods() {
+	firstDate = TimeUtils.dateFromString("2019-03-21 15:00:00.000");
+	middleDate = TimeUtils.dateFromString("2019-03-22 16:00:00.000");
+	lastDate = TimeUtils.dateFromString("2019-03-23 17:00:00.000");
+	nextDate = TimeUtils.dateFromString("2019-03-24 18:00:00.000");
+}
+
+
+Jeste me tam nesedi cas, protoze kdyz si dam pozadavek: 
+http://localhost:8080/TempStatService/temperatures/?dateFrom=2019-03-23 15:00:00.000&dateTo=2019-03-23 16:00:00.000
+tak me to vrati zaznamy s casy napr. 2019-03-23 14:30:23.000 
+To bude tim UTC, ale bez toho to nejelo a s pokusy nastavit tam nasi aktualni casovou zonu jsem take nebyl moc uspesny.
+spring.datasource.url=jdbc:mysql://localhost:3306/tempstatservice?createDatabaseIfNotExist=true&serverTimezone=UTC 
+
+Pokud dám v MySQL SELECT @@time_zone; tak dostanu, že má SYSTEM což přesně chci... odstranil jsem tedy parametr serverTimezone z connection stringu. 

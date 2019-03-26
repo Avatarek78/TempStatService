@@ -5,9 +5,11 @@ import cz.fg.tempstatservice.entities.TemperaturePeriod;
 import cz.fg.tempstatservice.exceptions.IdException;
 import cz.fg.tempstatservice.services.MapValidationErrorService;
 import cz.fg.tempstatservice.services.TemperatureService;
+import cz.fg.tempstatservice.utils.TimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 
 /**
  * Controller for handling with Temperatures data.
@@ -77,6 +80,17 @@ public class TemperatureController {
         Temperature temperature = temperatureService.getTemperatureById(id);
         HttpHeaders responseHeaders = createHeaderWithLocation("/temperatures/" + temperature.getId());
         return new ResponseEntity<>(temperature, responseHeaders, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "", params = {"lowTemp","highTemp"})
+    public Iterable<Temperature> getTemperatureByTempRange(@RequestParam Float lowTemp, @RequestParam Float highTemp) {
+        return temperatureService.findByTempRange(lowTemp, highTemp);
+    }
+
+    @GetMapping(path = "", params = {"dateFrom","dateTo"})
+    public Iterable<Temperature> getByDateAndTime(@RequestParam @DateTimeFormat(pattern = TimeUtils.DATE_FORMAT) Date dateFrom,
+                                                  @RequestParam @DateTimeFormat(pattern = TimeUtils.DATE_FORMAT) Date dateTo) {
+        return temperatureService.findByDateAndTime(dateFrom, dateTo);
     }
 
     /**

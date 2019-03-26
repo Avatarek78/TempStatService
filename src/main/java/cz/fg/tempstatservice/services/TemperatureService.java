@@ -67,8 +67,18 @@ public class TemperatureService {
         temperatureRepository.deleteById(id);
     }
 
+    /**
+     * @see cz.fg.tempstatservice.repositories.TemperatureRepository#findByTempRange(Float, Float)
+     */
     public Iterable<Temperature> findByTempRange(Float lowTemp, Float highTemp) {
         return temperatureRepository.findByTempRange(lowTemp, highTemp);
+    }
+
+    /**
+     * @see cz.fg.tempstatservice.repositories.TemperatureRepository#findByDateAndTime(Date, Date)
+     */
+    public Iterable<Temperature> findByDateAndTime(Date dateFrom, Date dateTo) {
+        return temperatureRepository.findByDateAndTime(dateFrom, dateTo);
     }
 
     /**

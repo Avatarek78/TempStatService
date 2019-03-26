@@ -13,6 +13,9 @@ import java.util.Date;
  */
 @Entity
 @Data
+@Table(indexes = {
+    @Index(name = "IDX_TEMP_VALUE", columnList = "temp_value")
+})
 public class Temperature {
     @Id
     @GeneratedValue
@@ -23,7 +26,8 @@ public class Temperature {
     @JsonFormat(pattern = TimeUtils.DATE_FORMAT)
     private Date dateAndTime;
 
-    @NotNull(message = "Temperature is required")
     @Column(scale=2, name = "temp_value")
+    @NotNull(message = "Temperature is required")
     private Float tempValue;
+
 }

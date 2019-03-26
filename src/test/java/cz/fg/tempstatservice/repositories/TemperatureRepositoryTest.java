@@ -65,14 +65,10 @@ public class TemperatureRepositoryTest {
     }
 
     private void initPeriods() {
-        try {
-            firstDate = TimeUtils.dateFormat.parse("2019-03-21 12:00:00.000");
-            middleDateA = TimeUtils.dateFormat.parse("2019-03-22 15:00:00.000");
-            middleDateB = TimeUtils.dateFormat.parse("2019-03-22 18:00:00.000");
-            lastDate = TimeUtils.dateFormat.parse("2019-03-23 21:00:00.000");
-        } catch (ParseException e) {
-            logger.error("Date parse error", e);
-        }
+        firstDate = TimeUtils.dateFromString("2019-03-21 12:00:00.000");
+        middleDateA = TimeUtils.dateFromString("2019-03-22 15:00:00.000");
+        middleDateB = TimeUtils.dateFromString("2019-03-22 18:00:00.000");
+        lastDate = TimeUtils.dateFromString("2019-03-23 21:00:00.000");
     }
 
     private LinkedList<Temperature> createTestTemperatureCollection() {

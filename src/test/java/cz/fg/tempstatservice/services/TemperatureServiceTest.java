@@ -70,24 +70,20 @@ public class TemperatureServiceTest {
          * [3] - {@link Float} Value of maximum temperature.
          * [4] - {@link String} Count of measurements.
          */
-        try {
-            dataArr[0] = TimeUtils.dateFormat.parse("2019-03-20 12:00:00.000");
-            dataArr[1] = TimeUtils.dateFormat.parse("2019-03-20 13:00:00.000");
-            dataArr[2] = 16f;
-            dataArr[3] = 17f;
-            dataArr[4] = BigInteger.valueOf(5L);
-            dataList.add(dataArr);
-            dataArr = Arrays.copyOf(dataArr, dataArr.length);
-            // End date of longest  period longer by one millisecond.
-            expEndOfLongestPeriod = TimeUtils.dateFormat.parse("2019-03-20 13:00:00.001");
-            dataArr[1] = expEndOfLongestPeriod;
-            dataList.add(dataArr);
-            dataArr = Arrays.copyOf(dataArr, dataArr.length);
-            dataArr[1] = TimeUtils.dateFormat.parse("2019-03-20 12:59:59.999");
-            dataList.add(dataArr);
-        } catch (ParseException e) {
-            logger.error("Date parse error", e);
-        }
+        dataArr[0] = TimeUtils.dateFromString("2019-03-20 12:00:00.000");
+        dataArr[1] = TimeUtils.dateFromString("2019-03-20 13:00:00.000");
+        dataArr[2] = 16f;
+        dataArr[3] = 17f;
+        dataArr[4] = BigInteger.valueOf(5L);
+        dataList.add(dataArr);
+        dataArr = Arrays.copyOf(dataArr, dataArr.length);
+        // End date of longest  period longer by one millisecond.
+        expEndOfLongestPeriod = TimeUtils.dateFromString("2019-03-20 13:00:00.001");
+        dataArr[1] = expEndOfLongestPeriod;
+        dataList.add(dataArr);
+        dataArr = Arrays.copyOf(dataArr, dataArr.length);
+        dataArr[1] = TimeUtils.dateFromString("2019-03-20 12:59:59.999");
+        dataList.add(dataArr);
         return dataList;
     }
 

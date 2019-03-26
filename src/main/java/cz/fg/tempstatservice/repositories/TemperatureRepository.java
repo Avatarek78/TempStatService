@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Date;
 
 /**
- * Interface for Temperature entity persistence.
+ * Interface for {@Link Temperature} entity persistence.
  */
 @Repository
 public interface TemperatureRepository extends PagingAndSortingRepository<Temperature, Long> {
@@ -86,9 +86,21 @@ public interface TemperatureRepository extends PagingAndSortingRepository<Temper
                                                                 @Param("hourFrom") Integer hourFrom,
                                                                 @Param("hourTo") Integer hourTo);
 
+    /**
+     * Find {@link Temperature} records by temperature values range
+     * @param lowTemp
+     * @param highTemp
+     * @return Collection of {@link Temperature}
+     */
     @Query("from Temperature t where t.tempValue >= :lowTemp and t.tempValue <= :highTemp")
     Iterable<Temperature> findByTempRange(@Param("lowTemp") Float lowTemp, @Param("highTemp") Float highTemp);
 
+    /**
+     * Find {@link Temperature} records by date and time range
+     * @param dateFrom
+     * @param dateTo
+     * @return Collection of {@link Temperature}
+     */
     @Query("from Temperature t where t.dateAndTime >= :dateFrom and t.dateAndTime <= :dateTo ")
     Iterable<Temperature> findByDateAndTime(@Param("dateFrom") Date dateFrom, @Param("dateTo") Date dateTo);
 
