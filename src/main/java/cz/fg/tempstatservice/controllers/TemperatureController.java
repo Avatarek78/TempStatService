@@ -77,18 +77,18 @@ public class TemperatureController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<?> getTemperatureById(@PathVariable Long id) throws IdException {
-        Temperature temperature = temperatureService.getTemperatureById(id);
+        Temperature temperature = temperatureService.findByById(id);
         HttpHeaders responseHeaders = createHeaderWithLocation("/temperatures/" + temperature.getId());
         return new ResponseEntity<>(temperature, responseHeaders, HttpStatus.OK);
     }
 
     @GetMapping(path = "", params = {"lowTemp","highTemp"})
-    public Iterable<Temperature> getTemperatureByTempRange(@RequestParam Float lowTemp, @RequestParam Float highTemp) {
+    public Iterable<Temperature> getTemperaturesByTempRange(@RequestParam Float lowTemp, @RequestParam Float highTemp) {
         return temperatureService.findByTempRange(lowTemp, highTemp);
     }
 
     @GetMapping(path = "", params = {"dateFrom","dateTo"})
-    public Iterable<Temperature> getByDateAndTime(@RequestParam @DateTimeFormat(pattern = TimeUtils.DATE_FORMAT) Date dateFrom,
+    public Iterable<Temperature> getTemperaturesByDateAndTime(@RequestParam @DateTimeFormat(pattern = TimeUtils.DATE_FORMAT) Date dateFrom,
                                                   @RequestParam @DateTimeFormat(pattern = TimeUtils.DATE_FORMAT) Date dateTo) {
         return temperatureService.findByDateAndTime(dateFrom, dateTo);
     }
@@ -102,7 +102,7 @@ public class TemperatureController {
      */
     @PostMapping("/{id}")
     public ResponseEntity<?> updateTemperatureById(@PathVariable Long id, @RequestBody Temperature temperature) throws IdException {
-        Temperature temperatureToUpdate = temperatureService.getTemperatureById(id);
+        Temperature temperatureToUpdate = temperatureService.findByById(id);
         temperatureService.mergeTemperatures(temperature, temperatureToUpdate);
         Temperature updatedTemperature = temperatureService.saveOrUpdateTemperature(temperatureToUpdate);
         HttpHeaders responseHeaders = createHeaderWithLocation("/temperatures/" + updatedTemperature.getId());

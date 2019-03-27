@@ -106,6 +106,18 @@ public class TemperatureRepositoryTest {
         assertTemperaturePeriods(periodsData, middleRecCountB, middleTempRangeB);
     }
 
+    @Test
+    public void checkFindByTempRange() {
+        Iterable<Temperature> byTempRange = temperatureRepository.findByTempRange(13F, 14F);
+        assertEquals("Unexpected count of results", lastTempRange.size(), byTempRange.spliterator().estimateSize());
+    }
+
+    @Test
+    public void checkFindByDateAndTime() {
+        Iterable<Temperature> byTempRange = temperatureRepository.findByDateAndTime(firstTempRange.getFirst().getDateAndTime(), firstTempRange.getLast().getDateAndTime());
+        assertEquals("Unexpected count of results", firstTempRange.size(), byTempRange.spliterator().estimateSize());
+    }
+
     private void assertTemperaturePeriods(ArrayList<Object[]> periodsData,
                                           int expectedRecCount,
                                           LinkedList<Temperature> expectedTempData) {

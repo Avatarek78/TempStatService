@@ -18,11 +18,6 @@ public final class TestUtils {
     private TestUtils() {
     }
 
-    public static void main(String[] args) {
-        Iterable<Temperature> temperatures = createTestTemperatureCollection(new Date(), 1, 100,10, TimeUnit.SECONDS,15F,24F);
-        temperatures.forEach(System.out::println);
-    }
-
     /**
      * Method to create test collection of {@link Temperature} entities.
      * @param firstDate {@link Date} of the first record

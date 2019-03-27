@@ -12,7 +12,7 @@ import java.util.Date;
  * Interface for {@Link Temperature} entity persistence.
  */
 @Repository
-public interface TemperatureRepository extends PagingAndSortingRepository<Temperature, Long> {
+public interface TemperatureRepository extends PagingAndSortingRepository<Temperature, Long>, TemperatureRepositoryExt {
 
     /**
      * Getting value of start and end date of the longest period when temperatures didn't fall below the value lowTemp
@@ -87,21 +87,12 @@ public interface TemperatureRepository extends PagingAndSortingRepository<Temper
                                                                 @Param("hourTo") Integer hourTo);
 
     /**
-     * Find {@link Temperature} records by temperature values range
-     * @param lowTemp
-     * @param highTemp
-     * @return Collection of {@link Temperature}
-     */
-    @Query("from Temperature t where t.tempValue >= :lowTemp and t.tempValue <= :highTemp")
-    Iterable<Temperature> findByTempRange(@Param("lowTemp") Float lowTemp, @Param("highTemp") Float highTemp);
-
-    /**
      * Find {@link Temperature} records by date and time range
      * @param dateFrom
      * @param dateTo
      * @return Collection of {@link Temperature}
      */
-    @Query("from Temperature t where t.dateAndTime >= :dateFrom and t.dateAndTime <= :dateTo ")
+    @Query("from Temperature t where t.dateAndTime >= :dateFrom and t.dateAndTime <= :dateTo order by t.dateAndTime asc")
     Iterable<Temperature> findByDateAndTime(@Param("dateFrom") Date dateFrom, @Param("dateTo") Date dateTo);
 
 }

@@ -47,7 +47,7 @@ public class TemperatureService {
      * @return Temperature record if exists otherwise throws IdException.
      * @throws IdException when entity doesn't exists in DB.
      */
-    public Temperature getTemperatureById(Long id) throws IdException {
+    public Temperature findByById(Long id) throws IdException {
         Temperature temperature = temperatureRepository.findById(id).orElse(null);
         if (temperature == null) {
             throw new IdException("Temperature with ID '" + id + "' doesn't exists");
