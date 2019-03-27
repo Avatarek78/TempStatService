@@ -3,8 +3,29 @@ HOST: http://58ebc611.ngrok.io/TempStatService
 
 # TempStatService
 
-The service for statistics temperature data. Ngrok is used for tunel to service on localhost from Apiary 
+The service for statistics temperature data. 
+The service for statistics temperature data. 
+Service allows the user to store records from temperature measurements. 
+Each record about measurement contains:
+- unique id of measurement
+- temperature in Celsius degree
+- date and time of measurement
+
+
+User can:
+- store new Temperature
+- get Temperature by id
+- update Temperature data by id
+- delete Temperature by id
+- get all Temperatures
+- get Temperatures by temp value range
+- get Temperatures for time period
+- get longest time period by temp value range
+- get longest time period by temp value range and hour range of day
+
+Ngrok is used for tunel to service on localhost from Apiary 
 see: https://ngrok.com/product 
+
 Service offers API functions described below:
 
 # Group Temperatures
@@ -13,7 +34,7 @@ Service offers API functions described below:
 
 ### Add Temperature record [POST] 
 
-Storing the temperature value in Celsius degree and with actual timestamp.
+Storing the temperature value in Celsius degree and with date and time of measurement.
 
 + Request (application/json)
 
