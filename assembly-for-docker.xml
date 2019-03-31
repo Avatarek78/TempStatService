@@ -1,0 +1,13 @@
+<assembly>
+    <id>release-for-docker</id>
+    <formats>
+        <format>dir</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <files>
+        <file>
+            <source>target/tempstatservice-${pom.version}.jar</source>
+            <destName>tempstatservice.jar</destName>
+        </file>
+    </files>
+</assembly>
