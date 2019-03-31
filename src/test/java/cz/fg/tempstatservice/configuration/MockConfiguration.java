@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Profile;
  * Configuration for JUnit testing.
  */
 @Configuration()
-@Profile("test")
+@Profile("JUnitTest")
 public class MockConfiguration {
     @Bean
     public TemperatureRepository temperatureRepository() {

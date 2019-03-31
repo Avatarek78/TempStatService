@@ -11,7 +11,8 @@ import java.util.Map;
 
 /**
  * Service for input data validation through @Valid annotation before parameters (entities) in controllers methods.
- * Each specific validation is written under each field of validated entity by "validation-api" annotations.
+ * Each specific validation is written under each field of validated entity by "validation-api" annotations
+ * (e.g {@link javax.validation.constraints.NotNull})
  */
 @Service
 public class MapValidationErrorService {

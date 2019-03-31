@@ -1,0 +1,34 @@
+---
+version: '3.0'
+services:
+  java:
+    image: openjdk:8u201-jdk-alpine3.9
+    container_name: TempStatService
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/tempstatservice?createDatabaseIfNotExist=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=changeme
+    ports:
+      - 8080:8080
+    networks:
+      - net
+    depends_on: ['mysql']
+    volumes:
+      - ./java:/java
+    entrypoint: ["/usr/bin/java", "-jar", "-Dspring.profiles.active=default", "java/tempstatservice/tempstatservice.jar"]
+
+  mysql:
+    image: mysql:8.0.15
+    container_name: MySQL
+    environment:
+      - MYSQL_ROOT_PASSWORD=changeme
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=changeme
+    ports:
+      - 3306:3306
+    networks:
+        - net
+
+networks:
+    net:
+      driver: bridge

@@ -49,4 +49,8 @@ public final class TimeUtils {
             return null;
         }
     }
+
+    public static String dateToString(Date date) {
+        return TimeUtils.dateFormat.format(date);
+    }
 }

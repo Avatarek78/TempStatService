@@ -4,7 +4,8 @@ import cz.fg.tempstatservice.entities.Temperature;
 import org.springframework.stereotype.Repository;
 
 /**
- * Interface for extending TemperatureRepository interface.
+ * Interface extending TemperatureRepository interface. Primarily for demonstration of using CriteriaApi
+ * except of direct queries in TemperatureRepository interface.
  */
 @Repository
 public interface TemperatureRepositoryExt {

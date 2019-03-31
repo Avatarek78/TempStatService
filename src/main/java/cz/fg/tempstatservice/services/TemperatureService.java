@@ -24,9 +24,9 @@ public class TemperatureService {
     @Autowired
     private TemperatureRepository temperatureRepository;
 
-
     /**
-     * @return All Temperature records from DB.
+     * Get all Temperature records from DB.
+     * @return Collection of {@link Temperature}
      */
     public Iterable<Temperature> getAllTemperatures() {
         return temperatureRepository.findAll();
@@ -58,7 +58,7 @@ public class TemperatureService {
     /**
      * Delete Temperature record by DB id.
      * @param id DB id to find.
-     * @throws IdException when record doesn't exists in DB.
+     * @throws IdException when entity doesn't exists in DB.
      */
     public void deleteTemperatureById(Long id) throws IdException {
         if (!temperatureRepository.existsById(id)) {

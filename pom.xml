@@ -16,9 +16,19 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<mysql.test.port>3306</mysql.test.port>
-		<mysql.test.pw>root</mysql.test.pw>
 	</properties>
+
+	<profiles>
+		<profile>
+			<id>release-for-docker</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<assembly.descriptor>assembly-for-docker.xml</assembly.descriptor>
+			</properties>
+		</profile>
+	</profiles>
 
 	<dependencies>
 		<dependency>
@@ -61,17 +71,37 @@
 			<artifactId>easymock</artifactId>
 			<version>LATEST</version>
 		</dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>5.1.5.RELEASE</version>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>LATEST</version>
+		</dependency>
+	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<appendAssemblyId>false</appendAssemblyId>
+					<outputDirectory>${project.basedir}/docker/java</outputDirectory>
+					<finalName>tempstatservice</finalName>
+					<descriptors>
+						<descriptor>${assembly.descriptor}</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

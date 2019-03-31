@@ -134,23 +134,6 @@ spring.datasource.username=test
 spring.datasource.password=
 
 
-Aktualni obsah: application-test.properties
-# H2 Database
-hibernate.dialect=org.hibernate.dialect.H2Dialect
-hibernate.hbm2ddl.auto=create
-spring.h2.console.enabled=true
-spring.h2.console.path=/h2
-
-
-# H2 DataSource
-spring.datasource.url=jdbc:h2:file:~/temp-stat-service-test
-spring.datasource.username=sa
-spring.datasource.password=
-spring.datasource.driver-class-name=org.h2.Driver
-
-# Logging
-logging.level.root=INFO
-
 Takto je to funkcni vcetne vytvoreni databaze s nazvem "temp-stat-service-test": 
 # H2 Database
 spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
@@ -286,4 +269,102 @@ tak me to vrati zaznamy s casy napr. 2019-03-23 14:30:23.000
 To bude tim UTC, ale bez toho to nejelo a s pokusy nastavit tam nasi aktualni casovou zonu jsem take nebyl moc uspesny.
 spring.datasource.url=jdbc:mysql://localhost:3306/tempstatservice?createDatabaseIfNotExist=true&serverTimezone=UTC 
 
-Pokud dám v MySQL SELECT @@time_zone; tak dostanu, že má SYSTEM což přesně chci... odstranil jsem tedy parametr serverTimezone z connection stringu. 
+Pokud dám v MySQL SELECT @@time_zone; tak dostanu, že má SYSTEM což přesně chci... odstranil jsem tedy parametr serverTimezone=UTC z connection stringu. 
+A dostanu opět: 
+Caused by: com.mysql.cj.exceptions.InvalidConnectionAttributeException: The server time zone value 'Støední Evropa (bìný èas)' is unrecognized or represents more than one time zone. 
+You must configure either the server or JDBC driver (via the serverTimezone configuration property) to use a more specifc time zone value if you want to utilize time zone support.
+
+Z tohoto vygenerovaného základního testu vytvořím integrační test. 
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@Ignore("Test is slow")
+public class TempStatServiceApplicationTests {
+
+	@Test
+	public void contextLoads() {
+	}
+
+}
+
+*** DOCKERizace *** 
+
+Problém s docker-compose ve Vagrantu: 
+There are errors in the configuration of this machine. Please fix
+the following errors and try again:
+vm:
+* The 'docker_compose' provisioner could not be found.
+
+Nainstaloval jsem tento plugin a už to jede https://github.com/leighmcculloch/vagrant-docker-compose.
+
+
+Problém s rozjetím virtuálky Debianu pro Docker image: 
+WHvCapabilityCodeHypervisorPresent is FALSE! Make sure you have enabled the 'Windows Hypervisor Platform' feature. (VERR_NEM_NOT_AVAILABLE).
+AMD-V is not available (VERR_SVM_NO_SVM).
+Návratový kód: 
+E_FAIL (0x80004005)
+Komponenta: 
+ConsoleWrap
+Rozhraní: 
+IConsole {872da645-4a9b-1727-bee2-5585105b9eed}
+Řešení: 
+"Zapnout nebo vypnout funkce systému Windows" -> Hyper-V  je zapnuté, což způsobuje nefunkčnost VirtualBoxu, který používá Vagrant -> vypnul jsem ho a restartoval -> OK virtuálka nabíhá. 
+
+Appka se mě ve virtuálce spouští, ale má problémy s připojením k databázi: 
+com.mysql.cj.jdbc.exceptions.CommunicationsException: Communications link failure
+Zkusím si místo spuštění appky vypsat proměnné prostředí a zkontroluju, že je tam všechno OK. 
+
+entrypoint: ["/usr/bin/java", "-jar", "-Dspring.profiles.active=default", "java/tempstatservice.jar"] -> entrypoint: ["env"] 
+openjdk  | PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin
+openjdk  | HOSTNAME=be2f5f3d59bc
+openjdk  | bootstrap.memory_lock=true
+openjdk  | http.host=0.0.0.0
+openjdk  | ES_JAVA_OPTS=-Xms512m -Xmx512m
+openjdk  | SPRING_DATASOURCE_USERNAME=root
+openjdk  | SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/tempstatservice?createDatabaseIfNotExist=true&serverTimezone=UTC
+openjdk  | SPRING_DATASOURCE_PASSWORD=root
+openjdk  | transport.host=127.0.0.1
+openjdk  | cluster.name=docker-cluster
+openjdk  | LANG=C.UTF-8
+openjdk  | JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk
+openjdk  | JAVA_VERSION=8u201
+openjdk  | JAVA_ALPINE_VERSION=8.201.08-r0
+openjdk  | HOME=/root
+
+Změním url na DB z localhost na mysql a to jak v application.properies tak v docker-compose.yml, protože "mysql" je název docker kontejneru ve kterém běží databáze.
+
+Takže pro vývoj budu používat DB na localhostu tím, že si přidám do spouštěcí konfigurace v IDE do VM Options: 
+-Dspring.datasource.url=jdbc:mysql://localhost:3306/tempstatservice?createDatabaseIfNotExist=true&serverTimezone=UTC 
+
+Zkusím to s docker-compose.yml bez těchto proměnných: 
+- cluster.name=docker-cluster
+- bootstrap.memory_lock=true
+- ES_JAVA_OPTS=-Xms512m -Xmx512m
+- transport.host=127.0.0.1
+- http.host=0.0.0.0
+
+HTTP GET
+
+Zbavil jsem se používání testovacího souboru pro konfiguraci application-test.properties a prostě jsem to dal přímo do třídy MemDbTestConfig ty potřebné hodnoty. 
+
+{"id":1,"dateAndTime":"2019-03-21 11:00:00.000","tempValue":21.249077}
+
+{"id":4,"dateAndTime":"2020-08-06 18:48:00.990","tempValue":3.57478} 
+
+/**
+ * TODO: Místo základního CrudRepository jsem použil PagingAndSortingRepository, abych mohl stránkovat záznamy.
+ * Tím bych mohl prostou metodu getAllTemperatures vylepšit na metodu s podporou stránkování, protože samozřejmě
+ * pokud by bylo v DB několik milionů záznamů tak není vhodné aby se vybírali a vraceli všechny najednou.
+ * Takže bych možná přidělal metodu pro stránkování jako další metodu pro výpis hodnot kromě jednoduchého findAll.
+ */
+ 
+Finální úpravy: 
+
+TempStatService application 
+- Added Docker configuration 
+- Added maven release-for-docker configuration
+- Added logging configuration
+- Added integration test
+- Moved test specific helper classes from src to test folder
+- Updated README.md 
+- Added or updated comments
+- Removed some unnecessary files

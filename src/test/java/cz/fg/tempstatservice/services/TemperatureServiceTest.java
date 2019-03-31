@@ -17,7 +17,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.math.BigInteger;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -32,7 +31,7 @@ import static org.junit.Assert.*;
         TemperatureService.class,
         MockConfiguration.class
 })
-@ActiveProfiles("test")
+@ActiveProfiles("JUnitTest")
 public class TemperatureServiceTest {
 
     private final Logger logger = LoggerFactory.getLogger(TemperatureServiceTest.class);
@@ -63,17 +62,15 @@ public class TemperatureServiceTest {
     private ArrayList<Object[]> createTestRawPeriodDataCollection() {
         ArrayList<Object[]> dataList = new ArrayList<>();
         Object[] dataArr = new Object[5];
-        /**
-         * [0] - {@link java.sql.Timestamp} Start date and time.
-         * [1] - {@link java.sql.Timestamp} End date and time.
-         * [2] - {@link Float} Value of minimum temperature.
-         * [3] - {@link Float} Value of maximum temperature.
-         * [4] - {@link String} Count of measurements.
-         */
+        // Start date and time.
         dataArr[0] = TimeUtils.dateFromString("2019-03-20 12:00:00.000");
+        // End date and time.
         dataArr[1] = TimeUtils.dateFromString("2019-03-20 13:00:00.000");
+        // Value of minimum temperature.
         dataArr[2] = 16f;
+        // Value of maximum temperature.
         dataArr[3] = 17f;
+        // Count of measurements.
         dataArr[4] = BigInteger.valueOf(5L);
         dataList.add(dataArr);
         dataArr = Arrays.copyOf(dataArr, dataArr.length);

@@ -1,5 +1,6 @@
 package cz.fg.tempstatservice.controllers;
 
+import cz.fg.tempstatservice.entities.ResponseMessage;
 import cz.fg.tempstatservice.entities.Temperature;
 import cz.fg.tempstatservice.entities.TemperaturePeriod;
 import cz.fg.tempstatservice.exceptions.IdException;
@@ -46,13 +47,6 @@ public class TemperatureController {
     }
 
     /**
-     * TODO: Místo základního CrudRepository jsem použil PagingAndSortingRepository, abych mohl stránkovat záznamy.
-     * Tím bych mohl prostou metodu getAllTemperatures vylepšit na metodu s podporou stránkování, protože samozřejmě
-     * pokud by bylo v DB několik milionů záznamů tak není vhodné aby se vybírali a vraceli všechny najednou.
-     * Takže bych možná přidělal metodu pro stránkování jako další metodu pro výpis hodnot kromě jednoduchého findAll.
-     */
-
-    /**
      * Add new {@link Temperature} record.
      * @param temperature {@link Temperature} object to add.
      * @param result BindingResult for this request.
@@ -82,11 +76,23 @@ public class TemperatureController {
         return new ResponseEntity<>(temperature, responseHeaders, HttpStatus.OK);
     }
 
+    /**
+     * Get {@link Temperature} records by temperature range.
+     * @param lowTemp Temperature value as {@link Float}
+     * @param highTemp Temperature value as {@link Float}
+     * @return collection of found temperatures. Collection will be empty if no records by criteria found.
+     */
     @GetMapping(path = "", params = {"lowTemp","highTemp"})
     public Iterable<Temperature> getTemperaturesByTempRange(@RequestParam Float lowTemp, @RequestParam Float highTemp) {
         return temperatureService.findByTempRange(lowTemp, highTemp);
     }
 
+    /**
+     * Get {@link Temperature} records by date and time range.
+     * @param dateFrom Date and time as {@link Date}
+     * @param dateTo Date and time as {@link Date}
+     * @return collection of found temperatures. Collection will be empty if no records by criteria found.
+     */
     @GetMapping(path = "", params = {"dateFrom","dateTo"})
     public Iterable<Temperature> getTemperaturesByDateAndTime(@RequestParam @DateTimeFormat(pattern = TimeUtils.DATE_FORMAT) Date dateFrom,
                                                   @RequestParam @DateTimeFormat(pattern = TimeUtils.DATE_FORMAT) Date dateTo) {
@@ -118,7 +124,7 @@ public class TemperatureController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteTemperatureById(@PathVariable Long id) throws IdException {
         temperatureService.deleteTemperatureById(id);
-        return new ResponseEntity<>("Temperature with ID: " + id + " was deleted", HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseMessage("Temperature with ID: " + id + " was deleted"), HttpStatus.OK);
     }
 
     /**
@@ -133,6 +139,7 @@ public class TemperatureController {
 
     /**
      * @see cz.fg.tempstatservice.services.TemperatureService#findLongestPeriodByTempRangeAndDayPeriod(Float, Float, Integer, Integer)
+     * @return {@link ResponseEntity} with statistics information represented by {@link TemperaturePeriod} object.
      */
     @GetMapping(path = "/statistics", params = {"lowTemp","highTemp","hourFrom","hourTo"})
     public ResponseEntity<?> findLongestPeriodByTempRangeAndDayPeriod(@RequestParam Float lowTemp,
