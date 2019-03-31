@@ -1,16 +1,192 @@
 {
 	"info": {
-		"_postman_id": "d36ca8a9-907d-4b10-9ceb-cceb15ecf4e8",
+		"_postman_id": "3a8745ff-1049-4a70-980f-a653f7bc2026",
 		"name": "TempStatService",
 		"description": "The service for statistics temperature data. Service offers API functions described below:",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "List all temperatures",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
+			"name": "Add Temperature record",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"dateAndTime\": \"2019-06-20 18:52:00.990\",\r\n  \"tempValue\": 4.999\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/TempStatService/temperatures",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"TempStatService",
+						"temperatures"
+					]
+				},
+				"description": "Storing the temperature value in Celsius degree and with date and time of measurement."
 			},
+			"response": [
+				{
+					"name": "Add Temperature record",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"dateAndTime\": \"2019-20-06 18:40:00\",\n    \"temperature\": 22\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/TempStatService",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"TempStatService"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=UTF-8"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 17 Mar 2019 08:02:06 GMT"
+						},
+						{
+							"key": "Location",
+							"value": "/temperatures/3",
+							"description": "",
+							"type": "text"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 3,\n    \"dateAndTime\": \"2019-06-20 18:40:00\",\n    \"temperature\": 22\n}"
+				}
+			]
+		},
+		{
+			"name": "Get existing Temperature Record",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/TempStatService/temperatures/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"TempStatService",
+						"temperatures",
+						"1"
+					]
+				},
+				"description": "Getting of specific temperature record by id."
+			},
+			"response": []
+		},
+		{
+			"name": "Update existing Temperature record",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"tempValue\": 21\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/TempStatService/temperatures/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"TempStatService",
+						"temperatures",
+						"1"
+					]
+				},
+				"description": "Updating of specific temperature record by id."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete existing Temperature record",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/TempStatService/temperatures/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"TempStatService",
+						"temperatures",
+						"1"
+					]
+				},
+				"description": "Deleting of specific temperature record by id"
+			},
+			"response": []
+		},
+		{
+			"name": "List all temperatures",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -87,88 +263,177 @@
 						}
 					],
 					"cookie": [],
-					"body": "[\n    {\n        \"id\": 1,\n        \"dateAndTime\": \"2019-20-06 17:20:15\",\n        \"temperature\": 26\n    },\n    {\n        \"id\": 2,\n        \"dateAndTime\": \"2019-20-06 18:20:15\",\n        \"temperature\": 23\n    }\n]"
+					"body": "[\n    {\n        \"id\": 1,\n        \"dateAndTime\": \"2019-06-20 17:20:15\",\n        \"temperature\": 26\n    },\n    {\n        \"id\": 2,\n        \"dateAndTime\": \"2019-06-20 18:20:15\",\n        \"temperature\": 23\n    }\n]"
 				}
 			]
 		},
 		{
-			"name": "Add Temperature record",
+			"name": "Get by temperature range",
 			"request": {
-				"method": "POST",
-				"header": [],
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": ""
 				},
 				"url": {
-					"raw": "http://localhost:8080/TempStatService",
+					"raw": "http://localhost:8080/TempStatService/temperatures/?lowTemp=20&highTemp=22",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"TempStatService"
+						"TempStatService",
+						"temperatures",
+						""
+					],
+					"query": [
+						{
+							"key": "lowTemp",
+							"value": "20"
+						},
+						{
+							"key": "highTemp",
+							"value": "22"
+						}
 					]
 				},
-				"description": "Storing the temperature value in Celsius degree and with actual timestamp."
+				"description": "Getting all temperature values with their timestamps and unique ids by given temperature range."
 			},
-			"response": [
-				{
-					"name": "Add Temperature record",
-					"originalRequest": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"dateAndTime\": \"2019-20-06 18:40:00\",\n    \"temperature\": 22\n}"
-						},
-						"url": {
-							"raw": "http://localhost:8080/TempStatService",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"TempStatService"
-							]
-						}
-					},
-					"status": "Created",
-					"code": 201,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json;charset=UTF-8"
-						},
-						{
-							"key": "Transfer-Encoding",
-							"value": "chunked"
-						},
-						{
-							"key": "Date",
-							"value": "Sun, 17 Mar 2019 08:02:06 GMT"
-						},
-						{
-							"key": "Location",
-							"value": "/temperatures/3",
-							"description": "",
-							"type": "text"
-						}
+			"response": []
+		},
+		{
+			"name": "Get by date and time range",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/TempStatService/temperatures/?dateFrom=2019-03-23 15:00:00.000&dateTo=2019-03-23 16:00:00.000",
+					"protocol": "http",
+					"host": [
+						"localhost"
 					],
-					"cookie": [],
-					"body": "{\n    \"id\": 3,\n    \"dateAndTime\": \"2019-20-06 18:40:00\",\n    \"temperature\": 22\n}"
-				}
-			]
+					"port": "8080",
+					"path": [
+						"TempStatService",
+						"temperatures",
+						""
+					],
+					"query": [
+						{
+							"key": "dateFrom",
+							"value": "2019-03-23 15:00:00.000"
+						},
+						{
+							"key": "dateTo",
+							"value": "2019-03-23 16:00:00.000"
+						}
+					]
+				},
+				"description": "Getting all temperature values with their timestamps and unique ids by given start and end dates in format \"yyyy-MM-dd HH:mm:ss.SSS\"."
+			},
+			"response": []
+		},
+		{
+			"name": "Get longest period by low and high temperature",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/TempStatService/temperatures/statistics/?lowTemp=20&highTemp=22",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"TempStatService",
+						"temperatures",
+						"statistics",
+						""
+					],
+					"query": [
+						{
+							"key": "lowTemp",
+							"value": "20"
+						},
+						{
+							"key": "highTemp",
+							"value": "22"
+						}
+					]
+				},
+				"description": "Getting value of start and end date of the longest period when temperatures didn't fall below the value lowTemp and at the same time temperatures didn't rise above the value highTemp."
+			},
+			"response": []
+		},
+		{
+			"name": "Get longest period by low and high temperature between hours of day",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/TempStatService/temperatures/statistics/?lowTemp=20&highTemp=22&hourFrom=14&hourTo=15",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"TempStatService",
+						"temperatures",
+						"statistics",
+						""
+					],
+					"query": [
+						{
+							"key": "lowTemp",
+							"value": "20"
+						},
+						{
+							"key": "highTemp",
+							"value": "22"
+						},
+						{
+							"key": "hourFrom",
+							"value": "14"
+						},
+						{
+							"key": "hourTo",
+							"value": "15"
+						}
+					]
+				},
+				"description": "Getting value of start and end date of the longest period when temperatures didn't fall below the value lowTemp and at the same time temperatures didn't rise above the value highTemp. But with extra condition when hours of measuring must be between the entered values hourFrom and hourTo for each day."
+			},
+			"response": []
 		}
 	]
 }

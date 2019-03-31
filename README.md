@@ -3,8 +3,8 @@ The service for statistics temperature data.
 Service allows the user to store records from temperature measurements. 
 Each record about measurement contains:
 - unique id of measurement
-- temperature in Celsius degree
-- date and time of measurement
+- temperature in Celsius degree as decimal number (e.g. 18.548)
+- date and time of measurement in format "yyyy-MM-dd HH:mm:ss.SSS"
 
 
 User can:
