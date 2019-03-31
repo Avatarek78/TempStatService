@@ -1,15 +1,14 @@
 FORMAT: 1A
-HOST: http://58ebc611.ngrok.io/TempStatService
+HOST: http://af67704e.ngrok.io/TempStatService
 
 # TempStatService
 
 The service for statistics temperature data. 
-The service for statistics temperature data. 
 Service allows the user to store records from temperature measurements. 
 Each record about measurement contains:
 - unique id of measurement
-- temperature in Celsius degree
-- date and time of measurement
+- temperature in Celsius degree as decimal number (e.g. 18.548)
+- date and time of measurement in format "yyyy-MM-dd HH:mm:ss.SSS"
 
 
 User can:
@@ -39,8 +38,8 @@ Storing the temperature value in Celsius degree and with date and time of measur
 + Request (application/json)
 
         {
-            "dateAndTime": "2019-20-06 18:40:00.000",
-            "tempValue": 22
+            "dateAndTime": "2019-06-20 18:40:00.000",
+            "tempValue": 22.5
         }
 
 + Response 201 (application/json)
@@ -53,8 +52,8 @@ Storing the temperature value in Celsius degree and with date and time of measur
 
             {
                 "id": 3,
-                "dateAndTime": "2019-20-06 18:40:00.000",
-                "tempValue": 22
+                "dateAndTime": "2019-06-20 18:40:00.000",
+                "tempValue": 22.5
             }
 
 ### Get existing Temperature Record [GET /temperatures/{id}] 
@@ -74,8 +73,8 @@ Getting of specific temperature record by id.
 
             {
                 "id": 3,
-                "dateAndTime": "2019-20-06 18:40:00.000",
-                "tempValue": 22
+                "dateAndTime": "2019-06-20 18:40:00.000",
+                "tempValue": 22.5
             }
                 
 ### Update existing Temperature record [POST /temperatures/{id}] 
@@ -88,7 +87,7 @@ Updating of specific temperature record by id.
 + Request (application/json)
 
         {
-            "tempValue": 21
+            "tempValue": 21.8
         }
 
 + Response 200 (application/json)
@@ -101,8 +100,8 @@ Updating of specific temperature record by id.
 
             {
                 "id": 3,
-                "dateAndTime": "2019-20-06 18:40:00.000",
-                "tempValue": 21
+                "dateAndTime": "2019-06-20 18:40:00.000",
+                "tempValue": 21.8
             }
             
 ### Delete existing Temperature record [DELETE /temperatures/{id}] 
@@ -113,6 +112,12 @@ Deleting of specific temperature record by id
     + id (required, number, `3`) ... Numeric `id` of the temperature. 
 
 + Response 200 (application/json)
+
+    + Body
+
+            {
+                "message": "Temperature with ID: 3 was deleted"
+            }
 
 ## Temperature collection [/temperatures]
 
@@ -125,12 +130,12 @@ Getting all temperature values with their timestamps and unique ids.
         [
             {
                 "id": 1,
-                "dateAndTime": "2019-20-06 17:20:15.000",
-                "tempValue": 26
+                "dateAndTime": "2019-06-20 17:20:15.000",
+                "tempValue": 26.5
             },
             {
                 "id": 2,
-                "dateAndTime": "2019-20-06 18:20:15.000",
+                "dateAndTime": "2019-06-20 18:20:15.000",
                 "tempValue": 23
             }
         ]
@@ -148,12 +153,12 @@ Getting all temperature values with their timestamps and unique ids by given tem
         [
             {
                 "id": 1,
-                "dateAndTime": "2019-20-06 17:20:15.000",
-                "tempValue": 26
+                "dateAndTime": "2019-06-20 17:20:15.000",
+                "tempValue": 26.5
             },
             {
                 "id": 2,
-                "dateAndTime": "2019-20-06 18:20:15.000",
+                "dateAndTime": "2019-06-20 18:20:15.000",
                 "tempValue": 23
             }
         ]
@@ -171,12 +176,12 @@ Getting all temperature values with their timestamps and unique ids by given sta
         [
             {
                 "id": 1,
-                "dateAndTime": "2019-20-06 17:20:15.000",
-                "tempValue": 26
+                "dateAndTime": "2019-06-20 17:20:15.000",
+                "tempValue": 26.5
             },
             {
                 "id": 2,
-                "dateAndTime": "2019-20-06 18:20:15.000",
+                "dateAndTime": "2019-06-20 18:20:15.000",
                 "tempValue": 23
             }
         ]
@@ -194,8 +199,8 @@ Getting value of start and end date of the longest period when temperatures didn
 + Response 200 (application/json)
 
         {
-            "startOfPeriod": "2019-20-06 17:35:05.000",
-            "endOfPeriod": "2019-20-06 17:58:45.000"
+            "startOfPeriod": "2019-06-20 17:35:05.000",
+            "endOfPeriod": "2019-06-20 17:58:45.000"
             "minTemp": 22.5,
             "maxTemp": 23.9,
             "countOfMeasurements": 5
@@ -214,8 +219,8 @@ Getting value of start and end date of the longest period when temperatures didn
 + Response 200 (application/json)
 
         {
-            "startOfPeriod": "2019-20-06 17:35:05.000",
-            "endOfPeriod": "2019-20-06 17:58:45.000"
+            "startOfPeriod": "2019-06-20 17:35:05.000",
+            "endOfPeriod": "2019-06-20Update 17:58:45.000"
             "minTemp": 22.5,
             "maxTemp": 23.9,
             "countOfMeasurements": 5
