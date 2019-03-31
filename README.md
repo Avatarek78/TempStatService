@@ -22,7 +22,7 @@ User can:
 https://tempstatservice.docs.apiary.io
 
 ## API documentation in Postman 
-https://documenter.getpostman.com/view/6819917/S17utnG2 
+https://documenter.getpostman.com/view/6819917/S17wPmm1
 
 ## Docker
 - MySQL is available on port 3406
