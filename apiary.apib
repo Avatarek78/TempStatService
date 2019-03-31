@@ -8,7 +8,7 @@ The service for statistics temperature data.
 Service allows the user to store records from temperature measurements. 
 Each record about measurement contains:
 - unique id of measurement
-- temperature in Celsius degree
+- temperature in Celsius degree as decimal number (e.g. 18.548)
 - date and time of measurement in format "yyyy-MM-dd HH:mm:ss.SSS"
 
 
@@ -40,7 +40,7 @@ Storing the temperature value in Celsius degree and with date and time of measur
 
         {
             "dateAndTime": "2019-06-20 18:40:00.000",
-            "tempValue": 22
+            "tempValue": 22.5
         }
 
 + Response 201 (application/json)
@@ -54,7 +54,7 @@ Storing the temperature value in Celsius degree and with date and time of measur
             {
                 "id": 3,
                 "dateAndTime": "2019-06-20 18:40:00.000",
-                "tempValue": 22
+                "tempValue": 22.5
             }
 
 ### Get existing Temperature Record [GET /temperatures/{id}] 
@@ -75,7 +75,7 @@ Getting of specific temperature record by id.
             {
                 "id": 3,
                 "dateAndTime": "2019-06-20 18:40:00.000",
-                "tempValue": 22
+                "tempValue": 22.5
             }
                 
 ### Update existing Temperature record [POST /temperatures/{id}] 
@@ -88,7 +88,7 @@ Updating of specific temperature record by id.
 + Request (application/json)
 
         {
-            "tempValue": 21
+            "tempValue": 21.8
         }
 
 + Response 200 (application/json)
@@ -102,7 +102,7 @@ Updating of specific temperature record by id.
             {
                 "id": 3,
                 "dateAndTime": "2019-06-20 18:40:00.000",
-                "tempValue": 21
+                "tempValue": 21.8
             }
             
 ### Delete existing Temperature record [DELETE /temperatures/{id}] 
@@ -132,7 +132,7 @@ Getting all temperature values with their timestamps and unique ids.
             {
                 "id": 1,
                 "dateAndTime": "2019-06-20 17:20:15.000",
-                "tempValue": 26
+                "tempValue": 26.5
             },
             {
                 "id": 2,
@@ -155,7 +155,7 @@ Getting all temperature values with their timestamps and unique ids by given tem
             {
                 "id": 1,
                 "dateAndTime": "2019-06-20 17:20:15.000",
-                "tempValue": 26
+                "tempValue": 26.5
             },
             {
                 "id": 2,
@@ -178,7 +178,7 @@ Getting all temperature values with their timestamps and unique ids by given sta
             {
                 "id": 1,
                 "dateAndTime": "2019-06-20 17:20:15.000",
-                "tempValue": 26
+                "tempValue": 26.5
             },
             {
                 "id": 2,
