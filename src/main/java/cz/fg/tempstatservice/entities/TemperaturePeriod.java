@@ -7,8 +7,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.math.BigInteger;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import java.time.LocalDateTime;
 
 /**
  * Class with time period data. Contains start and end date, min and max temperature values and the number of measurements of this period.
@@ -19,10 +18,10 @@ import java.util.concurrent.TimeUnit;
 public class TemperaturePeriod implements Comparable<TemperaturePeriod> {
 
     @JsonFormat(pattern = TimeUtils.DATE_FORMAT)
-    private Date startOfPeriod;
+    private LocalDateTime startOfPeriod;
 
     @JsonFormat(pattern = TimeUtils.DATE_FORMAT)
-    private Date endOfPeriod;
+    private LocalDateTime endOfPeriod;
 
     private Float minTemp;
     private Float maxTemp;
@@ -30,8 +29,8 @@ public class TemperaturePeriod implements Comparable<TemperaturePeriod> {
 
     @Override
     public int compareTo(TemperaturePeriod o) {
-        Long thisTimeDiff = TimeUtils.getDateDiff(startOfPeriod, endOfPeriod, TimeUnit.MILLISECONDS);
-        Long otherTimeDiff = TimeUtils.getDateDiff(o.startOfPeriod, o.endOfPeriod, TimeUnit.MILLISECONDS);
+        Long thisTimeDiff = TimeUtils.getDateDiff(startOfPeriod, endOfPeriod);
+        Long otherTimeDiff = TimeUtils.getDateDiff(o.startOfPeriod, o.endOfPeriod);
         int result = thisTimeDiff.compareTo(otherTimeDiff);
         // If periods are same by time difference then compare them by countOfMeasurements
         if (result == 0) {

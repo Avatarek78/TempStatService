@@ -6,7 +6,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Entity which represents record about tempValue in database.
@@ -24,7 +24,7 @@ public class Temperature {
     @Column(name = "date_and_time")
     @NotNull(message = "Date and time is required")
     @JsonFormat(pattern = TimeUtils.DATE_FORMAT)
-    private Date dateAndTime;
+    private LocalDateTime dateAndTime;
 
     @Column(scale=2, name = "temp_value")
     @NotNull(message = "Temperature is required")

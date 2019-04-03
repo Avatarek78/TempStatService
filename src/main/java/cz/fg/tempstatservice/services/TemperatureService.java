@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -75,9 +76,9 @@ public class TemperatureService {
     }
 
     /**
-     * @see cz.fg.tempstatservice.repositories.TemperatureRepository#findByDateAndTime(Date, Date)
+     * @see cz.fg.tempstatservice.repositories.TemperatureRepository#findByDateAndTime(LocalDateTime, LocalDateTime)
      */
-    public Iterable<Temperature> findByDateAndTime(Date dateFrom, Date dateTo) {
+    public Iterable<Temperature> findByDateAndTime(LocalDateTime dateFrom, LocalDateTime dateTo) {
         return temperatureRepository.findByDateAndTime(dateFrom, dateTo);
     }
 

@@ -6,7 +6,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Interface for {@Link Temperature} entity persistence.
@@ -93,6 +93,6 @@ public interface TemperatureRepository extends PagingAndSortingRepository<Temper
      * @return Collection of {@link Temperature}
      */
     @Query("from Temperature t where t.dateAndTime >= :dateFrom and t.dateAndTime <= :dateTo order by t.dateAndTime asc")
-    Iterable<Temperature> findByDateAndTime(@Param("dateFrom") Date dateFrom, @Param("dateTo") Date dateTo);
+    Iterable<Temperature> findByDateAndTime(@Param("dateFrom") LocalDateTime dateFrom, @Param("dateTo") LocalDateTime dateTo);
 
 }

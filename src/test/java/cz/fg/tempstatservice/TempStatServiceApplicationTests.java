@@ -132,7 +132,7 @@ public class TempStatServiceApplicationTests {
 		Temperature tempChange = new Temperature();
 		tempChange.setTempValue(data.getFirstTempRange().getHigh());
 		HttpEntity<Temperature> entity = new HttpEntity<>(tempChange, headers);
-		ResponseEntity<String> response = restTemplate.exchange(createURL("/" + id), HttpMethod.POST, entity, String.class);
+		ResponseEntity<String> response = restTemplate.exchange(createURL("/" + id), HttpMethod.PUT, entity, String.class);
 		assertThat("Unexpected status", response.getStatusCode(), equalTo(HttpStatus.OK));
 		// Expected value is original Temperature entity with changed temp value.
 		Temperature tempExpected = allTemperaturesMap.get(id);

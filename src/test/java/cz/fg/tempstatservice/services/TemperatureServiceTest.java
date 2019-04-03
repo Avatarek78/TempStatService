@@ -17,9 +17,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 
 import static org.junit.Assert.*;
 
@@ -42,7 +42,7 @@ public class TemperatureServiceTest {
     @Autowired
     private TemperatureService temperatureService;
 
-    private Date expEndOfLongestPeriod;
+    private LocalDateTime expEndOfLongestPeriod;
 
     @Before
     public void setUp() {

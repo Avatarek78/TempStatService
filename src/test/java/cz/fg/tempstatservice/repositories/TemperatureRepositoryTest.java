@@ -91,11 +91,11 @@ public class TemperatureRepositoryTest {
         logger.info(period.toString());
         assertEquals("Unexpected measurements count", expectedRecCount, period.getCountOfMeasurements().intValue());
         assertEquals("Unexpected start of period date",
-                expectedTempData.getFirst().getDateAndTime().getTime(),
-                period.getStartOfPeriod().getTime());
+                expectedTempData.getFirst().getDateAndTime().getNano(),
+                period.getStartOfPeriod().getNano());
         assertEquals("Unexpected end of period date",
-                expectedTempData.getLast().getDateAndTime().getTime(),
-                period.getEndOfPeriod().getTime());
+                expectedTempData.getLast().getDateAndTime().getNano(),
+                period.getEndOfPeriod().getNano());
     }
 
 }

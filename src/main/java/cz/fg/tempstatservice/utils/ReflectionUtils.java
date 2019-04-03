@@ -14,9 +14,9 @@ public final class ReflectionUtils {
     }
 
     /**
-     * Sets all fields of T entity which isn't null in object objFrom into same fields in object objTo.
-     * @param objFrom source instance of Temperature entity.
-     * @param objTo target instance of Temperature entity.
+     * Sets all fields of T entity which isn't null in objFrom into same fields in objTo.
+     * @param objFrom source instance of object.
+     * @param objTo target instance of object.
      */
     public static <T> void mergeNotNullFields(T objFrom, T objTo) {
         for (Field field : objFrom.getClass().getDeclaredFields()) {

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Controller for handling with Temperatures data.
@@ -89,13 +89,13 @@ public class TemperatureController {
 
     /**
      * Get {@link Temperature} records by date and time range.
-     * @param dateFrom Date and time as {@link Date}
-     * @param dateTo Date and time as {@link Date}
+     * @param dateFrom LocalDateTime and time as {@link LocalDateTime}
+     * @param dateTo LocalDateTime and time as {@link LocalDateTime}
      * @return collection of found temperatures. Collection will be empty if no records by criteria found.
      */
     @GetMapping(path = "", params = {"dateFrom","dateTo"})
-    public Iterable<Temperature> getTemperaturesByDateAndTime(@RequestParam @DateTimeFormat(pattern = TimeUtils.DATE_FORMAT) Date dateFrom,
-                                                  @RequestParam @DateTimeFormat(pattern = TimeUtils.DATE_FORMAT) Date dateTo) {
+    public Iterable<Temperature> getTemperaturesByDateAndTime(@RequestParam @DateTimeFormat(pattern = TimeUtils.DATE_FORMAT) LocalDateTime dateFrom,
+                                                  @RequestParam @DateTimeFormat(pattern = TimeUtils.DATE_FORMAT) LocalDateTime dateTo) {
         return temperatureService.findByDateAndTime(dateFrom, dateTo);
     }
 
@@ -106,7 +106,7 @@ public class TemperatureController {
      * @return {@link ResponseEntity} with updated {@link Temperature} record if exists.
      * @throws IdException when tempValue record with specific id doesn't exists.
      */
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateTemperatureById(@PathVariable Long id, @RequestBody Temperature temperature) throws IdException {
         Temperature temperatureToUpdate = temperatureService.findByById(id);
         temperatureService.mergeTemperatures(temperature, temperatureToUpdate);

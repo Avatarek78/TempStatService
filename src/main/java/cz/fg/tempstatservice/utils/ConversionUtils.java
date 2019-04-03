@@ -3,8 +3,9 @@ package cz.fg.tempstatservice.utils;
 import cz.fg.tempstatservice.entities.TemperaturePeriod;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 
 public final class ConversionUtils {
 
@@ -21,11 +22,11 @@ public final class ConversionUtils {
         // Converts raw data into comparable TemperaturePeriod instances.
         periodData.forEach(object -> {
             TemperaturePeriod period = new TemperaturePeriod(
-                    (Date) object[0],       // startOfPeriod
-                    (Date) object[1],       // endOfPeriod
-                    objToFloat(object[2]),  // minTemp
-                    objToFloat(object[3]),  // maxTemp
-                    (BigInteger) object[4]  //countOfMeasurements
+                    objToDateTime(object[0]),   // startOfPeriod
+                    objToDateTime(object[1]),   // endOfPeriod
+                    objToFloat(object[2]),      // minTemp
+                    objToFloat(object[3]),      // maxTemp
+                    (BigInteger) object[4]      //countOfMeasurements
             );
             temperaturePeriods.add(period);
         });
@@ -42,4 +43,16 @@ public final class ConversionUtils {
             throw new IllegalArgumentException("Object must be Float or Double");
         }
     }
+
+    public static LocalDateTime objToDateTime(Object obj) {
+        Class cls = obj.getClass();
+        if (cls == Timestamp.class) {
+            return ((Timestamp)obj).toLocalDateTime();
+        } else if (cls == LocalDateTime.class) {
+            return (LocalDateTime)obj;
+        } else {
+            throw new IllegalArgumentException("Object must be LocalDateTime or Timestamp");
+        }
+    }
+
 }

@@ -129,7 +129,7 @@
 		{
 			"name": "Update existing Temperature record",
 			"request": {
-				"method": "POST",
+				"method": "PUT",
 				"header": [
 					{
 						"key": "Content-Type",

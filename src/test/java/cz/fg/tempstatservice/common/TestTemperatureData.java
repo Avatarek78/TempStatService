@@ -6,9 +6,10 @@ import cz.fg.tempstatservice.utils.TimeUtils;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.LinkedList;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Temperature data for testing purposes.
@@ -22,7 +23,7 @@ public class TestTemperatureData {
     private final int middleRecCountB = 25;
     private final int lastRecCount = 30;
     private final int timeStep = 3;
-    private final TimeUnit timeUnit = TimeUnit.MINUTES;
+    private final TemporalUnit timeUnit = ChronoUnit.MILLIS;
     private final TempRange firstTempRange = new TempRange(21F, 22F);
     private final TempRange middleTempRange = new TempRange(17F, 18F);
     private final TempRange lastTempRange = new TempRange(13F, 14F);
@@ -31,10 +32,10 @@ public class TestTemperatureData {
     private LinkedList<Temperature> middleTempListB;
     private LinkedList<Temperature> lastTempList;
     private LinkedList<Temperature> allTemperatures;
-    private Date firstDate;
-    private Date middleDateA;
-    private Date middleDateB;
-    private Date lastDate;
+    private LocalDateTime firstDate;
+    private LocalDateTime middleDateA;
+    private LocalDateTime middleDateB;
+    private LocalDateTime lastDate;
 
     public TestTemperatureData() {
         initPeriods();

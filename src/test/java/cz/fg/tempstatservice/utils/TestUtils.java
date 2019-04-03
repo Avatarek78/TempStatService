@@ -2,11 +2,15 @@ package cz.fg.tempstatservice.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import cz.fg.tempstatservice.common.TempRange;
 import cz.fg.tempstatservice.entities.Temperature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -15,7 +19,16 @@ import java.util.concurrent.TimeUnit;
  */
 public final class TestUtils {
 
-    private static final Logger TestUtils = LoggerFactory.getLogger(TestUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestUtils.class);
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    /**
+     * Necessary initialization for possibility to customize formatting of LocalDateTime by @JsonFormat. It's very ugly older Date don't need it.
+     */
+    static {
+        OBJECT_MAPPER.registerModule(new JavaTimeModule());
+        OBJECT_MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    }
 
     /**
      * To prevent instantiation.
@@ -25,26 +38,26 @@ public final class TestUtils {
 
     /**
      * Method to create test collection of {@link Temperature} entities.
-     * @param firstDate {@link Date} of the first record
+     * @param firstDate {@link LocalDateTime} of the first record
      * @param recordsCount Required number of records to generate.
-     * @param timeStep Time step for Date of next generated record.
-     * @param timeUnit {@link TimeUnit} for Date of next generated record.
+     * @param timeStep Time step for LocalDateTime of next generated record.
+     * @param timeUnit {@link TimeUnit} for LocalDateTime of next generated record.
      * @param lowTemp Lowest {@link Float} value of tempValue for generated Temperatures.
      * @param highTemp Highest {@link Float} value of tempValue for generated Temperatures.
      * @return Generated collection of {@link Temperature} entities.
      */
-    public static LinkedList<Temperature> createTestTemperatureCollection(Date firstDate,
+    public static LinkedList<Temperature> createTestTemperatureCollection(LocalDateTime firstDate,
                                                                           int recordsCount,
                                                                           int timeStep,
-                                                                          TimeUnit timeUnit,
+                                                                          TemporalUnit timeUnit,
                                                                           Float lowTemp,
                                                                           Float highTemp) {
         LinkedList<Temperature> temperatures = new LinkedList<>();
-        Date dateAndTime = firstDate;
+        LocalDateTime dateAndTime = firstDate;
         for (long id = 0 ; id < recordsCount ; id++) {
             Temperature temperature = new Temperature();
             temperature.setDateAndTime(dateAndTime);
-            dateAndTime = new Date(dateAndTime.getTime() + TimeUnit.MILLISECONDS.convert(timeStep, timeUnit));
+            dateAndTime = dateAndTime.plus(timeStep, timeUnit);
             float generatedTemp = lowTemp + new Random().nextFloat() * (highTemp - lowTemp);
             temperature.setTempValue(generatedTemp);
             temperatures.add(temperature);
@@ -60,9 +73,9 @@ public final class TestUtils {
     public static String objToJsonString(Object value) {
         String result = null;
         try {
-            result = new ObjectMapper().writeValueAsString(value);
+            result = OBJECT_MAPPER.writeValueAsString(value);
         } catch (JsonProcessingException e) {
-            TestUtils.error("Json serialization failed" ,e);
+            LOGGER.error("Json serialization failed" ,e);
         }
         return result;
     }
