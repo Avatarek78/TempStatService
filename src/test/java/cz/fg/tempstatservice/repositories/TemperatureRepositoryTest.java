@@ -9,6 +9,8 @@ import cz.fg.tempstatservice.utils.ConversionUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,8 @@ import static org.junit.Assert.*;
 /**
  * Tests complex methods of {@link TemperatureRepository} by using H2 database in memory.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(PowerMockRunner.class)
+@PowerMockRunnerDelegate(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { MemDbTestConfig.class, TestTemperatureData.class }, loader = AnnotationConfigContextLoader.class)
 public class TemperatureRepositoryTest {
 
